@@ -1,0 +1,594 @@
+<title>Scouting LSC 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Oswald:wght@500;600&display=swap">
+<style>
+/* Layout: filter rail on the left (stacks on top below 980px); main column = map + comparator side by side, then ranking table, then shortlist. */
+:root{
+  --bg:#0B0F0C; --panel:#131A14; --panel-2:#1A231B; --line:#26322A; --fg:#F5F1E9; --muted:#9BA79E; --faint:#5F6B62;
+  --accent:#3DDC5A; --accent-ink:#0B0F0C; --accent-soft:rgba(61,220,90,.14); --dot:rgba(61,220,90,.55); --ref:#F5F1E9;
+  --p1:#3DDC5A; --p2:#F5F1E9; --p3:#E3B341; --p4:#6CB4EE; --warn:#E3B341; --bad:#E5604D;
+  --f-display:"Oswald","Arial Narrow",Impact,sans-serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#F5F1E9; --panel:#FFFDF8; --panel-2:#EFE9DD; --line:#DDD5C6; --fg:#111111; --muted:#5B635C; --faint:#9A9F97;
+  --accent:#1F9E3B; --accent-ink:#FFFFFF; --accent-soft:rgba(31,158,59,.12); --dot:rgba(31,158,59,.5); --ref:#111111;
+  --p1:#1F9E3B; --p2:#111111; --p3:#B7860B; --p4:#2F7FC1; --warn:#B7860B; --bad:#C4402E; color-scheme:light; } }
+:root[data-theme="light"]{
+  --bg:#F5F1E9; --panel:#FFFDF8; --panel-2:#EFE9DD; --line:#DDD5C6; --fg:#111111; --muted:#5B635C; --faint:#9A9F97;
+  --accent:#1F9E3B; --accent-ink:#FFFFFF; --accent-soft:rgba(31,158,59,.12); --dot:rgba(31,158,59,.5); --ref:#111111;
+  --p1:#1F9E3B; --p2:#111111; --p3:#B7860B; --p4:#2F7FC1; --warn:#B7860B; --bad:#C4402E; color-scheme:light; }
+html,body{background:var(--bg)}
+body{color:var(--fg);font:14px/1.45 var(--f-body)}
+#scouting-lsc-2027{max-width:1480px;margin:0 auto;padding-inline:16px;padding-block:18px 48px}
+#scouting-lsc-2027 *{box-sizing:border-box}
+.sc-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.sc-eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.sc-top h1{font:600 clamp(28px,4vw,44px)/1 var(--f-display);letter-spacing:.01em;text-transform:uppercase;margin:6px 0 0;text-wrap:balance}
+.sc-meta{font:12px/1.5 var(--f-mono);color:var(--muted);text-align:right}
+.sc-meta b{color:var(--fg);font-weight:500}
+.sc-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.sc-grid{grid-template-columns:minmax(0,1fr)}}
+.sc-panel{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.sc-rail{padding:14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:980px){.sc-rail{position:static}}
+.sc-lab{font:500 10.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:flex;justify-content:space-between;gap:8px}
+.sc-lab output{color:var(--fg);letter-spacing:0}
+.sc-fams{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.sc-fam{font:600 12px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;padding:9px 0;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:4px;cursor:pointer}
+.sc-fam[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sc-fam:hover{border-color:var(--accent)}
+.sc-famname{font-size:12px;color:var(--muted);margin-top:6px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.sc-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sc-in,.sc-sel{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--fg);border-radius:4px;padding:7px 8px;font:13px var(--f-body)}
+.sc-in:focus,.sc-sel:focus,.sc-fam:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sc-check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.sc-check input{accent-color:var(--accent);width:15px;height:15px}
+.sc-btn{font:500 12px/1 var(--f-mono);letter-spacing:.04em;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;cursor:pointer}
+.sc-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sc-note{font-size:12px;color:var(--muted);line-height:1.5}
+.sc-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.sc-duo{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+@media (max-width:1240px){.sc-duo{grid-template-columns:minmax(0,1fr)}}
+.sc-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.sc-h h2{font:600 17px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.sc-h .sc-sub{font:11.5px var(--f-mono);color:var(--muted)}
+.sc-axes{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:11px var(--f-mono);color:var(--muted)}
+.sc-axes .sc-sel{width:auto;max-width:190px;padding:5px 6px;font-size:12px}
+.sc-plotwrap{position:relative;padding:6px 8px 10px}
+.sc-plot{width:100%;height:auto;display:block}
+.sc-plot text{font-family:var(--f-mono);font-size:10.5px;fill:var(--muted)}
+.sc-plot .sc-axl{font-size:11px;fill:var(--fg)}
+.sc-plot .sc-grid-l{stroke:var(--line);stroke-width:1}
+.sc-plot .sc-med{stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1}
+.sc-plot .pt{fill:var(--dot);stroke:none;cursor:pointer;transition:r .15s}
+.sc-plot .pt.ref{fill:none;stroke:var(--ref);stroke-width:1.4}
+.sc-plot .pt.dim{opacity:.35}
+.sc-plot .pt:hover{r:7}
+.sc-plot .lbl{font-family:var(--f-body);font-size:11px;font-weight:600;paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.sc-legend{display:flex;flex-wrap:wrap;gap:14px;padding:0 14px 12px;font:11px var(--f-mono);color:var(--muted)}
+.sc-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.sc-tip{position:absolute;pointer-events:none;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-size:12px;min-width:170px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:5}
+.sc-tip b{font-weight:600}
+.sc-tip .m{font:11px var(--f-mono);color:var(--muted)}
+.sc-cmp{padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.sc-chips{display:flex;flex-direction:column;gap:8px}
+.sc-card{border:1px solid var(--line);border-left:3px solid var(--c);border-radius:4px;padding:9px 10px;display:flex;flex-direction:column;gap:7px;background:var(--panel-2)}
+.sc-card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.sc-card-name{font-weight:600}
+.sc-card-name a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--faint)}
+.sc-card-sub{font:11px var(--f-mono);color:var(--muted)}
+.sc-x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
+.sc-x:hover{color:var(--bad)}
+.sc-status{display:flex;gap:4px;flex-wrap:wrap}
+.sc-status button{font:500 10.5px/1 var(--f-mono);letter-spacing:.04em;padding:5px 7px;border-radius:3px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.sc-status button[aria-pressed="true"][data-s="seguir"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.sc-status button[aria-pressed="true"][data-s="video"]{background:var(--warn);border-color:var(--warn);color:#111}
+.sc-status button[aria-pressed="true"][data-s="descartado"]{background:var(--faint);border-color:var(--faint);color:var(--bg)}
+.sc-card textarea{width:100%;min-height:34px;resize:vertical;background:var(--panel);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:6px 7px;font:12.5px var(--f-body)}
+.sc-bars{display:flex;flex-direction:column;gap:9px}
+.sc-bar-row{display:grid;grid-template-columns:132px minmax(0,1fr);gap:10px;align-items:center}
+.sc-bar-l{font-size:12px;color:var(--muted);line-height:1.2}
+.sc-bar-set{display:flex;flex-direction:column;gap:3px}
+.sc-bar{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:6px;align-items:center}
+.sc-track{height:7px;background:var(--panel-2);border-radius:2px;position:relative;overflow:hidden}
+.sc-track::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--faint);opacity:.6}
+.sc-fill{height:100%;background:var(--c);border-radius:2px}
+.sc-bv{font:11px var(--f-mono);color:var(--muted);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sc-bv b{color:var(--fg);font-weight:500}
+.sc-empty{padding:18px 14px;color:var(--muted);font-size:13px}
+.sc-tablewrap{overflow-x:auto}
+table.sc-t{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+.sc-t th{font:500 10.5px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
+.sc-t th:nth-child(-n+3){text-align:left}
+.sc-t th[aria-sort]{color:var(--accent)}
+.sc-t td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.sc-t td:nth-child(-n+3){text-align:left}
+.sc-t tbody tr{cursor:pointer}
+.sc-t tbody tr:hover td{background:var(--panel-2)}
+.sc-t tr.on td{background:var(--accent-soft)}
+.sc-t .nm{font-weight:600}
+.sc-t .ps{font:10.5px var(--f-mono);color:var(--muted);margin-left:6px}
+.sc-t .pc{display:inline-block;min-width:44px;padding:2px 5px;border-radius:3px}
+.sc-t .score{font:600 13px var(--f-mono)}
+.sc-badge{display:inline-block;font:500 9.5px/1 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;padding:3px 5px;border-radius:3px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:1px}
+.sc-badge.out{border-color:var(--warn);color:var(--warn)}
+.sc-badge.lsc{border-color:var(--ref);color:var(--ref)}
+.sc-dotst{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.sc-more{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.sc-sl{padding:12px 14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.sc-sl{grid-template-columns:minmax(0,1fr)}}
+.sc-sl h3{font:600 13px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.sc-sl ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sc-sl li{border:1px solid var(--line);border-radius:4px;padding:7px 9px;cursor:pointer;background:var(--panel-2)}
+.sc-sl li:hover{border-color:var(--accent)}
+.sc-sl li small{display:block;font:11px var(--f-mono);color:var(--muted)}
+.sc-sl li em{display:block;font-style:normal;font-size:12px;margin-top:3px;white-space:normal}
+.sc-io{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px}
+.sc-io textarea{width:100%;min-height:80px;background:var(--panel-2);border:1px solid var(--line);color:var(--fg);border-radius:4px;padding:8px;font:11.5px var(--f-mono)}
+.sc-foot{margin-top:18px;font:11px/1.6 var(--f-mono);color:var(--faint)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="scouting-lsc-2027">
+  <header class="sc-top">
+    <div>
+      <div class="sc-eyebrow">Lexington SC · Dirección de análisis</div>
+      <h1>Scouting LSC 2027</h1>
+    </div>
+    <div class="sc-meta">USL Championship 2026 · Fuente <b>FotMob</b> · extraído <b>30 sep 2026</b><br><span id="sc-count"></span></div>
+  </header>
+
+  <div class="sc-grid">
+    <aside class="sc-panel sc-rail" aria-label="Filtros">
+      <div>
+        <div class="sc-lab">Posición</div>
+        <div class="sc-fams" id="sc-fams"></div>
+        <div class="sc-famname" id="sc-famname"></div>
+      </div>
+      <div>
+        <div class="sc-lab"><span>Minutos mínimos</span><output id="sc-minout"></output></div>
+        <input type="range" id="sc-min" min="0" max="2400" step="90" value="900">
+      </div>
+      <div>
+        <div class="sc-lab">Edad</div>
+        <div class="sc-row2">
+          <input class="sc-in" id="sc-agemin" type="number" min="15" max="45" value="16" aria-label="Edad mínima">
+          <input class="sc-in" id="sc-agemax" type="number" min="15" max="45" value="40" aria-label="Edad máxima">
+        </div>
+      </div>
+      <div>
+        <div class="sc-lab">Conferencia</div>
+        <select class="sc-sel" id="sc-conf"><option value="all">Ambas</option><option value="Eastern">Este</option><option value="Western">Oeste</option></select>
+      </div>
+      <div>
+        <div class="sc-lab">Club</div>
+        <select class="sc-sel" id="sc-club"><option value="all">Todos los clubes</option></select>
+      </div>
+      <div>
+        <div class="sc-lab">Estado</div>
+        <select class="sc-sel" id="sc-state"><option value="all">Todos</option><option value="in">En plantilla</option><option value="out">Fuera de plantilla actual</option></select>
+      </div>
+      <div>
+        <div class="sc-lab">Buscar</div>
+        <input class="sc-in" id="sc-q" type="search" placeholder="Nombre del jugador">
+      </div>
+      <label class="sc-check"><input type="checkbox" id="sc-hidelsc"> Ocultar jugadores de LSC</label>
+      <label class="sc-check"><input type="checkbox" id="sc-onlysl"> Solo mi shortlist</label>
+      <button class="sc-btn" id="sc-reset" type="button">Restablecer filtros</button>
+      <p class="sc-note">Percentiles calculados contra jugadores de la misma posición con 900+ minutos en 2026. Las métricas /90 vacías en FotMob quedan fuera del cálculo, no cuentan como cero.</p>
+    </aside>
+
+    <main class="sc-main">
+      <div class="sc-duo">
+        <section class="sc-panel" aria-label="Mapa de jugadores">
+          <div class="sc-h">
+            <h2>Mapa</h2>
+            <div class="sc-axes">
+              <label>X <select class="sc-sel" id="sc-x"></select></label>
+              <label>Y <select class="sc-sel" id="sc-y"></select></label>
+            </div>
+          </div>
+          <div class="sc-plotwrap" id="sc-plotwrap">
+            <svg class="sc-plot" id="sc-plot" viewBox="0 0 640 430" role="img" aria-label="Gráfico de dispersión de jugadores"></svg>
+            <div class="sc-tip" id="sc-tip" hidden></div>
+          </div>
+          <div class="sc-legend">
+            <span><i style="background:var(--dot)"></i>Jugador filtrado</span>
+            <span><i style="border:1.5px solid var(--ref)"></i>Jugador de LSC</span>
+            <span><i style="background:var(--p1)"></i>En comparación</span>
+            <span>- - mediana del grupo · clic en un punto para comparar</span>
+          </div>
+        </section>
+
+        <section class="sc-panel" aria-label="Comparador">
+          <div class="sc-h">
+            <h2>Comparar</h2>
+            <div class="sc-axes">
+              <select class="sc-sel" id="sc-addref" aria-label="Añadir referencia de LSC"><option value="">+ Referencia LSC</option></select>
+            </div>
+          </div>
+          <div class="sc-cmp" id="sc-cmp"></div>
+        </section>
+      </div>
+
+      <section class="sc-panel" aria-label="Ranking">
+        <div class="sc-h">
+          <h2>Ranking</h2>
+          <span class="sc-sub" id="sc-rankinfo"></span>
+        </div>
+        <div class="sc-tablewrap"><table class="sc-t" id="sc-table"></table></div>
+        <div class="sc-more"><span class="sc-note" id="sc-shown"></span><button class="sc-btn" id="sc-morebtn" type="button">Mostrar 50 más</button></div>
+      </section>
+
+      <section class="sc-panel" aria-label="Shortlist">
+        <div class="sc-h">
+          <h2>Shortlist</h2>
+          <span class="sc-sub" id="sc-slmode"></span>
+        </div>
+        <div class="sc-sl" id="sc-sl"></div>
+        <div class="sc-io">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="sc-btn" type="button" id="sc-export">Copiar shortlist (JSON)</button>
+            <button class="sc-btn" type="button" id="sc-importbtn">Importar shortlist</button>
+          </div>
+          <div id="sc-importbox" hidden>
+            <textarea id="sc-importtxt" placeholder="Pega aquí el JSON copiado de otra versión de la página"></textarea>
+            <button class="sc-btn" type="button" id="sc-importgo">Importar</button>
+          </div>
+          <span class="sc-note" id="sc-iomsg"></span>
+        </div>
+      </section>
+      <p class="sc-foot">Datos: FotMob, USL Championship 2026 (temporada regular en curso, ~26 jornadas). Valor estimado FotMob en €, orientativo. Posición asignada por la posición principal de FotMob, con correcciones manuales marcadas con *.</p>
+    </main>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/[];
+(function(){
+"use strict";
+const POOL_MIN = 900;
+const LSC = "Lexington SC";
+// Manual position corrections (FotMob lists these players out of role)
+const FAM_OVERRIDE = { 1016092:"DM" };
+const FAMS = {
+  GK:{l:"Portero", m:["svp","sv90","gc90","cs","pas90","pasp","lb90","lbp","rat"], x:"sv90", y:"svp"},
+  CB:{l:"Central", m:["def90","tk90","int90","clr90","blk90","rec90","pas90","pasp","lb90","lbp","fl90","rat"], x:"def90", y:"pas90"},
+  FB:{l:"Lateral / carrilero", m:["def90","tk90","int90","rec90","cc90","bcc90","a90","dr90","pas90","pasp","rat"], x:"def90", y:"cc90"},
+  DM:{l:"Pivote", m:["rec90","tk90","int90","def90","pwm90","pas90","pasp","lb90","lbp","cc90","fl90","rat"], x:"rec90", y:"pas90"},
+  CM:{l:"Interior / mediapunta", m:["cc90","bcc90","a90","g90","sh90","dr90","pas90","pasp","rec90","pwa90","rat"], x:"cc90", y:"g90"},
+  W:{l:"Extremo", m:["g90","sh90","sot90","conv","cc90","bcc90","a90","dr90","drp","fd90","pwa90","rat"], x:"dr90", y:"cc90"},
+  ST:{l:"Delantero centro", m:["g90","sh90","sot90","conv","ga90","cc90","dr90","fd90","pwa90","rat"], x:"sh90", y:"g90"},
+  ALL:{l:"Todas las posiciones", m:["rat","ga90","cc90","dr90","def90","rec90","pas90","pasp"], x:"min", y:"rat"}
+};
+const FAM_ORDER = ["ALL","GK","CB","FB","DM","CM","W","ST"];
+const FAM_SHORT = {ALL:"Todas",GK:"POR",CB:"DFC",FB:"LAT",DM:"MCD",CM:"MC",W:"EXT",ST:"DC"};
+const M = {
+  min:{l:"Minutos",d:0}, rat:{l:"Rating FotMob",d:2}, potm:{l:"MVP del partido",d:0},
+  g:{l:"Goles",d:0}, a:{l:"Asistencias",d:0}, g90:{l:"Goles /90",d:2}, a90:{l:"Asistencias /90",d:2}, ga90:{l:"G+A /90",d:2},
+  sh90:{l:"Tiros /90",d:1}, sot90:{l:"Tiros a puerta /90",d:1}, conv:{l:"Conversión de tiro %",d:1},
+  cc90:{l:"Ocasiones creadas /90",d:1}, bcc90:{l:"Ocasiones claras creadas /90",d:2},
+  pas90:{l:"Pases precisos /90",d:1}, pasp:{l:"Precisión de pase %",d:1}, lb90:{l:"Balones largos precisos /90",d:1}, lbp:{l:"Balón largo %",d:1},
+  dr90:{l:"Regates exitosos /90",d:1}, drp:{l:"Regate %",d:1}, fd90:{l:"Faltas recibidas /90",d:1},
+  def90:{l:"Acciones defensivas /90",d:1}, tk90:{l:"Entradas /90",d:1}, int90:{l:"Intercepciones /90",d:1}, clr90:{l:"Despejes /90",d:1},
+  blk90:{l:"Bloqueos /90",d:1}, rec90:{l:"Recuperaciones /90",d:1}, pwa90:{l:"Recuperación último tercio /90",d:1}, pwm90:{l:"Recuperación medio campo /90",d:1},
+  fl90:{l:"Faltas cometidas /90",d:1,low:1}, cs:{l:"Porterías a cero",d:0}, sv90:{l:"Atajadas /90",d:1}, svp:{l:"% atajadas",d:1}, gc90:{l:"Goles recibidos /90",d:2,low:1},
+  age:{l:"Edad",d:0}, v:{l:"Valor est. FotMob (€)",d:0}
+};
+const AXIS_KEYS = ["min","rat","g90","a90","ga90","sh90","sot90","conv","cc90","bcc90","pas90","pasp","lb90","lbp","dr90","drp","fd90","def90","tk90","int90","clr90","blk90","rec90","pwa90","pwm90","fl90","sv90","svp","gc90","age","v"];
+const PCOL = ["var(--p1)","var(--p2)","var(--p3)","var(--p4)"];
+const STATUS = {seguir:{l:"Seguir",c:"var(--accent)"}, video:{l:"Ver video",c:"var(--warn)"}, descartado:{l:"Descartado",c:"var(--faint)"}};
+
+// ---------- data prep ----------
+const P = DATA.map(d=>{
+  const o = Object.assign({}, d);
+  o.lsc = d.t===LSC && !d.out;
+  if (FAM_OVERRIDE[d.id]) { o.f = FAM_OVERRIDE[d.id]; o.fx = 1; }
+  const mins = d.min||0;
+  if (mins>0){
+    if (d.a!=null) o.a90 = +(d.a/mins*90).toFixed(3);
+    if (d.bcc!=null) o.bcc90 = +(d.bcc/mins*90).toFixed(3);
+    const ga = (d.g||0)+(d.a||0); if (d.g!=null||d.a!=null) o.ga90 = +(ga/mins*90).toFixed(3);
+  }
+  return o;
+});
+const byId = new Map(P.map(p=>[p.id,p]));
+// percentiles per family
+const PCT = new Map(); const POOL = {};
+Object.keys(FAMS).forEach(f=>{
+  if (f==="ALL") return;
+  const pool = P.filter(p=>p.f===f && (p.min||0)>=POOL_MIN);
+  POOL[f] = pool.length;
+  const sorted = {};
+  AXIS_KEYS.concat(["a90","bcc90","ga90"]).forEach(k=>{ sorted[k] = pool.map(p=>p[k]).filter(v=>v!=null).sort((a,b)=>a-b); });
+  P.filter(p=>p.f===f).forEach(p=>{
+    const r = {};
+    Object.keys(sorted).forEach(k=>{
+      const v=p[k], arr=sorted[k]; if (v==null || arr.length<5) return;
+      let lo=0, eq=0; for (const x of arr){ if (x<v) lo++; else if (x===v) eq++; }
+      let pc = (lo+eq/2)/arr.length*100; if (M[k]&&M[k].low) pc = 100-pc;
+      r[k] = Math.round(pc);
+    });
+    const tm = FAMS[f].m.map(k=>r[k]).filter(v=>v!=null);
+    r._score = tm.length >= Math.ceil(FAMS[f].m.length*0.6) ? Math.round(tm.reduce((a,b)=>a+b,0)/tm.length) : null;
+    PCT.set(p.id, r);
+  });
+});
+POOL.ALL = P.filter(p=>(p.min||0)>=POOL_MIN).length;
+
+// ---------- state ----------
+const DEF = {fam:"DM", min:900, amin:16, amax:40, conf:"all", club:"all", st:"all", q:"", hide:false, onlysl:false};
+let S = Object.assign({}, DEF, {x:FAMS.DM.x, y:FAMS.DM.y, cmp:[], sort:"_score", dir:-1, shown:50});
+try { const saved = JSON.parse(localStorage.getItem("lsc-scout-ui-v1")||"null"); if (saved && FAMS[saved.fam]) S = Object.assign(S, saved, {shown:50}); } catch(e){}
+function saveUI(){ try{ localStorage.setItem("lsc-scout-ui-v1", JSON.stringify(S)); }catch(e){} }
+
+// ---------- shortlist store (claude.ai db when available, browser storage otherwise) ----------
+const LSK = "lsc-scout-shortlist-v1";
+const Store = {
+  mode:"local", map:{}, db:null,
+  loadLocal(){ try{ this.map = JSON.parse(localStorage.getItem(LSK)||"{}")||{}; }catch(e){ this.map={}; } },
+  saveLocal(){ try{ localStorage.setItem(LSK, JSON.stringify(this.map)); }catch(e){} },
+  async init(){
+    this.loadLocal();
+    try {
+      if (window.claude && typeof window.claude.use==="function"){
+        const db = await window.claude.use("db");
+        if (db){
+          this.db = db; this.mode = "db";
+          db.collection("shortlist").onSnapshot(snap=>{
+            const m={}; snap.docs.forEach(d=>{ if (d.exists) m[d.id]=d.data(); });
+            this.map = m; renderSL(); renderCmp(); renderTable(); renderSLMode();
+          }, ()=>{ this.mode="local"; this.db=null; this.loadLocal(); renderSLMode(); });
+        }
+      }
+    } catch(e){ this.mode="local"; }
+    renderSLMode();
+  },
+  get(id){ return this.map[String(id)]||null; },
+  async set(id, patch){
+    const k=String(id); const cur = Object.assign({}, this.map[k]||{});
+    const next = Object.assign(cur, patch, {updated: new Date().toISOString()});
+    const empty = !next.status && !(next.note||"").trim();
+    if (this.mode==="db" && this.db){
+      try { if (empty) await this.db.collection("shortlist").doc(k).delete(); else await this.db.collection("shortlist").doc(k).set(next); }
+      catch(e){ ioMsg("No se pudo guardar en claude.ai; se guardó en este navegador."); this.mode="local"; }
+    }
+    if (empty) delete this.map[k]; else this.map[k]=next;
+    if (this.mode==="local") this.saveLocal();
+  }
+};
+
+// ---------- helpers ----------
+const $ = id=>document.getElementById(id);
+const esc = s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function fmt(k,v){ if (v==null||v==="") return "—"; const d=(M[k]||{}).d; if (k==="v") return "€"+Math.round(v/1000)+"k"; return (typeof v==="number"&&d!=null)? v.toFixed(d) : v; }
+function famOf(p){ return p.f||""; }
+function fotmob(p){ return "https://www.fotmob.com/players/"+p.id+"/"+p.u; }
+
+function filtered(){
+  const q = S.q.trim().toLowerCase();
+  return P.filter(p=>{
+    if (S.fam!=="ALL" && p.f!==S.fam) return false;
+    if ((p.min||0) < S.min) return false;
+    if (p.age!=null && (p.age<S.amin || p.age>S.amax)) return false;
+    if (S.conf!=="all" && p.cf!==S.conf) return false;
+    if (S.club!=="all" && p.t!==S.club) return false;
+    if (S.st==="in" && p.out) return false;
+    if (S.st==="out" && !p.out) return false;
+    if (S.hide && p.lsc) return false;
+    if (S.onlysl && !(Store.get(p.id)||{}).status) return false;
+    if (q && !p.n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").includes(q.normalize("NFD").replace(/[̀-ͯ]/g,""))) return false;
+    return true;
+  });
+}
+
+// ---------- controls ----------
+function buildControls(){
+  $("sc-fams").innerHTML = FAM_ORDER.map(f=>`<button type="button" class="sc-fam" data-f="${f}" aria-pressed="${S.fam===f}" title="${FAMS[f].l}">${FAM_SHORT[f]}</button>`).join("");
+  $("sc-fams").onclick = e=>{ const b=e.target.closest(".sc-fam"); if(!b) return; S.fam=b.dataset.f; S.x=FAMS[S.fam].x; S.y=FAMS[S.fam].y; S.sort="_score"; S.dir=-1; S.shown=50; syncControls(); renderAll(); };
+  const clubs=[...new Set(P.filter(p=>!p.out).map(p=>p.t))].sort();
+  $("sc-club").innerHTML = `<option value="all">Todos los clubes</option>`+clubs.map(c=>`<option>${esc(c)}</option>`).join("");
+  const axOpts = AXIS_KEYS.map(k=>`<option value="${k}">${M[k].l}</option>`).join("");
+  $("sc-x").innerHTML=axOpts; $("sc-y").innerHTML=axOpts;
+  const bind=(id,key,ev,conv)=>$(id).addEventListener(ev,e=>{ S[key]=conv?conv(e.target):e.target.value; S.shown=50; if(id==="sc-min") $("sc-minout").textContent=S.min+"′"; renderAll(); });
+  bind("sc-min","min","input",t=>+t.value);
+  bind("sc-agemin","amin","change",t=>+t.value||15);
+  bind("sc-agemax","amax","change",t=>+t.value||45);
+  bind("sc-conf","conf","change"); bind("sc-club","club","change"); bind("sc-state","st","change");
+  bind("sc-q","q","input"); bind("sc-hidelsc","hide","change",t=>t.checked); bind("sc-onlysl","onlysl","change",t=>t.checked);
+  $("sc-x").onchange=e=>{S.x=e.target.value; renderPlot(); saveUI();};
+  $("sc-y").onchange=e=>{S.y=e.target.value; renderPlot(); saveUI();};
+  $("sc-reset").onclick=()=>{ Object.assign(S, DEF, {fam:S.fam}); syncControls(); renderAll(); };
+  $("sc-morebtn").onclick=()=>{ S.shown+=50; renderTable(); };
+  $("sc-addref").onchange=e=>{ const id=+e.target.value; e.target.value=""; if(id) toggleCmp(id, true); };
+  $("sc-export").onclick=async()=>{
+    const txt = JSON.stringify(Store.map, null, 1);
+    try { await navigator.clipboard.writeText(txt); ioMsg(Object.keys(Store.map).length+" jugadores copiados al portapapeles."); }
+    catch(e){ $("sc-importbox").hidden=false; $("sc-importtxt").value=txt; $("sc-importtxt").select(); ioMsg("Copia el texto seleccionado (Cmd+C)."); }
+  };
+  $("sc-importbtn").onclick=()=>{ $("sc-importbox").hidden=!$("sc-importbox").hidden; };
+  $("sc-importgo").onclick=async()=>{
+    try { const obj=JSON.parse($("sc-importtxt").value); let n=0;
+      for (const [k,v] of Object.entries(obj)){ if (byId.has(+k) && v && typeof v==="object"){ await Store.set(+k,{status:v.status||"",note:String(v.note||"").slice(0,2000)}); n++; } }
+      ioMsg(n+" jugadores importados."); $("sc-importbox").hidden=true; renderAll();
+    } catch(e){ ioMsg("El texto no es un JSON válido de shortlist."); }
+  };
+}
+function syncControls(){
+  document.querySelectorAll(".sc-fam").forEach(b=>b.setAttribute("aria-pressed", b.dataset.f===S.fam));
+  $("sc-famname").textContent = FAMS[S.fam].l + " · pool percentil: " + POOL[S.fam] + " jugadores";
+  $("sc-min").value=S.min; $("sc-minout").textContent=S.min+"′";
+  $("sc-agemin").value=S.amin; $("sc-agemax").value=S.amax; $("sc-conf").value=S.conf; $("sc-club").value=S.club; $("sc-state").value=S.st;
+  $("sc-q").value=S.q; $("sc-hidelsc").checked=S.hide; $("sc-onlysl").checked=S.onlysl;
+  $("sc-x").value=S.x; $("sc-y").value=S.y;
+}
+function ioMsg(t){ $("sc-iomsg").textContent=t; }
+function renderSLMode(){ $("sc-slmode").textContent = Store.mode==="db" ? "Guardada en tu cuenta de claude.ai" : "Guardada en este navegador"; }
+
+function toggleCmp(id, forceAdd){
+  const i=S.cmp.indexOf(id);
+  if (i>=0 && !forceAdd) S.cmp.splice(i,1);
+  else if (i<0){ if (S.cmp.length>=4) S.cmp.shift(); S.cmp.push(id); }
+  saveUI(); renderPlot(); renderCmp(); renderTable();
+}
+
+// ---------- scatter ----------
+function niceTicks(min,max,n){
+  if (min===max){ min-=1; max+=1; }
+  const span=max-min, step0=span/n, mag=Math.pow(10,Math.floor(Math.log10(step0))), r=step0/mag;
+  const step=(r<1.5?1:r<3?2:r<7?5:10)*mag; const t=[]; for(let v=Math.ceil(min/step)*step; v<=max+1e-9; v+=step) t.push(+v.toFixed(6));
+  return {t, lo:Math.floor(min/step)*step, hi:Math.ceil(max/step)*step};
+}
+function median(a){ if(!a.length) return null; const s=[...a].sort((x,y)=>x-y), m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function renderPlot(){
+  const svg=$("sc-plot"), W=640, H=430, L=54, R=16, T=16, B=44;
+  const X=S.x, Y=S.y;
+  let pts = filtered().filter(p=>p[X]!=null && p[Y]!=null);
+  const extra = S.cmp.map(id=>byId.get(id)).filter(p=>p && p[X]!=null && p[Y]!=null && !pts.includes(p));
+  const all = pts.concat(extra);
+  if (!all.length){ svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle">Sin jugadores con datos para estos ejes y filtros</text>`; return; }
+  const xs=all.map(p=>p[X]), ys=all.map(p=>p[Y]);
+  const tx=niceTicks(Math.min(...xs),Math.max(...xs),6), ty=niceTicks(Math.min(...ys),Math.max(...ys),5);
+  const sx=v=>L+(v-tx.lo)/(tx.hi-tx.lo)*(W-L-R), sy=v=>H-B-(v-ty.lo)/(ty.hi-ty.lo)*(H-T-B);
+  let s="";
+  tx.t.forEach(v=>{ s+=`<line class="sc-grid-l" x1="${sx(v)}" x2="${sx(v)}" y1="${T}" y2="${H-B}"/><text x="${sx(v)}" y="${H-B+15}" text-anchor="middle">${fmtTick(X,v)}</text>`; });
+  ty.t.forEach(v=>{ s+=`<line class="sc-grid-l" x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}"/><text x="${L-7}" y="${sy(v)+3.5}" text-anchor="end">${fmtTick(Y,v)}</text>`; });
+  const mx=median(pts.map(p=>p[X])), my=median(pts.map(p=>p[Y]));
+  if (mx!=null) s+=`<line class="sc-med" x1="${sx(mx)}" x2="${sx(mx)}" y1="${T}" y2="${H-B}"/>`;
+  if (my!=null) s+=`<line class="sc-med" x1="${L}" x2="${W-R}" y1="${sy(my)}" y2="${sy(my)}"/>`;
+  s+=`<text class="sc-axl" x="${(L+W-R)/2}" y="${H-8}" text-anchor="middle">${esc(M[X].l)}${M[X].low?" (menos es mejor)":""}</text>`;
+  s+=`<text class="sc-axl" transform="translate(13 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle">${esc(M[Y].l)}${M[Y].low?" (menos es mejor)":""}</text>`;
+  const cmpSet=new Set(S.cmp);
+  pts.filter(p=>!cmpSet.has(p.id)&&!p.lsc).forEach(p=>{ s+=`<circle class="pt" data-id="${p.id}" cx="${sx(p[X]).toFixed(1)}" cy="${sy(p[Y]).toFixed(1)}" r="4.2"/>`; });
+  pts.filter(p=>!cmpSet.has(p.id)&&p.lsc).forEach(p=>{ s+=`<circle class="pt ref" data-id="${p.id}" cx="${sx(p[X]).toFixed(1)}" cy="${sy(p[Y]).toFixed(1)}" r="4.6"/>`; });
+  S.cmp.forEach((id,i)=>{ const p=byId.get(id); if(!p||p[X]==null||p[Y]==null) return; const cx=sx(p[X]), cy=sy(p[Y]);
+    s+=`<circle class="pt" data-id="${p.id}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6.5" style="fill:${PCOL[i]};stroke:var(--panel);stroke-width:1.5"/>`;
+    const anchor = cx>W-150?"end":"start", dx = anchor==="end"?-10:10;
+    s+=`<text class="lbl" x="${cx+dx}" y="${i%2? cy+15 : cy-8}" text-anchor="${anchor}" style="fill:${PCOL[i]}">${esc(p.n)}</text>`; });
+  svg.innerHTML=s;
+}
+function fmtTick(k,v){ if (k==="v") return (v/1000)+"k"; if (k==="min") return v>=1000?(v/1000)+"k":v; return +v.toFixed(2); }
+function bindPlot(){
+  const svg=$("sc-plot"), tip=$("sc-tip"), wrap=$("sc-plotwrap");
+  svg.addEventListener("mouseover",e=>{ const c=e.target.closest(".pt"); if(!c){ tip.hidden=true; return; } const p=byId.get(+c.dataset.id);
+    const pr=PCT.get(p.id)||{};
+    tip.innerHTML=`<b>${esc(p.n)}</b>${p.lsc?'<span class="sc-badge lsc">LSC</span>':""}<div class="m">${esc(p.t)} · ${esc(p.pos||"—")} · ${p.age??"—"} años · ${fmt("min",p.min)}′</div>
+      <div class="m">${esc(M[S.x].l)}: <b>${fmt(S.x,p[S.x])}</b>${pr[S.x]!=null?" · p"+pr[S.x]:""}</div><div class="m">${esc(M[S.y].l)}: <b>${fmt(S.y,p[S.y])}</b>${pr[S.y]!=null?" · p"+pr[S.y]:""}</div>`;
+    tip.hidden=false; const r=wrap.getBoundingClientRect(), cr=c.getBoundingClientRect();
+    let left=cr.left-r.left+12, top=cr.top-r.top-10; if (left>r.width-190) left=cr.left-r.left-190; tip.style.left=left+"px"; tip.style.top=Math.max(4,top)+"px"; });
+  svg.addEventListener("mouseleave",()=>{ tip.hidden=true; });
+  svg.addEventListener("click",e=>{ const c=e.target.closest(".pt"); if(c) toggleCmp(+c.dataset.id); });
+}
+
+// ---------- comparator ----------
+function renderCmp(){
+  const box=$("sc-cmp");
+  // LSC reference options for the active position
+  const refs=P.filter(p=>p.lsc && (p.min||0)>0 && (S.fam==="ALL"||p.f===S.fam)).sort((a,b)=>(b.min||0)-(a.min||0));
+  $("sc-addref").innerHTML=`<option value="">+ Referencia LSC</option>`+refs.map(p=>`<option value="${p.id}">${esc(p.n)} (${esc(p.pos.split(",")[0]||"")})</option>`).join("");
+  if (!S.cmp.length){ box.innerHTML=`<div class="sc-empty">Haz clic en un punto del mapa o en una fila del ranking para comparar hasta 4 jugadores. Usa “+ Referencia LSC” para medirlos contra el titular actual.</div>`; return; }
+  const players=S.cmp.map(id=>byId.get(id)).filter(Boolean);
+  const fam = S.fam!=="ALL" ? S.fam : (players[0].f||"ALL");
+  const keys = FAMS[fam].m;
+  let h=`<div class="sc-chips">`;
+  players.forEach((p,i)=>{
+    const sl=Store.get(p.id)||{}; const pr=PCT.get(p.id)||{};
+    const off = p.f && p.f!==fam ? ` · percentiles vs ${FAMS[p.f].l.toLowerCase()}` : "";
+    h+=`<div class="sc-card" style="--c:${PCOL[i]}">
+      <div class="sc-card-top"><div><div class="sc-card-name"><a href="${fotmob(p)}" target="_blank" rel="noopener">${esc(p.n)}</a>${p.lsc?'<span class="sc-badge lsc">LSC</span>':""}${p.out?'<span class="sc-badge out">Fuera de plantilla</span>':""}${p.inj?'<span class="sc-badge out">Lesionado</span>':""}</div>
+      <div class="sc-card-sub">${esc(p.t)} · ${esc(p.pos||"—")}${p.fx?"*":""} · ${p.age??"—"} años · ${esc(p.nat||"")} · ${fmt("min",p.min)}′ · ${fmt("v",p.v)}${pr._score!=null?" · índice "+pr._score:""}${off}</div></div>
+      <button class="sc-x" type="button" data-rm="${p.id}" aria-label="Quitar a ${esc(p.n)}">×</button></div>
+      <div class="sc-status" data-id="${p.id}">${Object.entries(STATUS).map(([k,v])=>`<button type="button" data-s="${k}" aria-pressed="${sl.status===k}">${v.l}</button>`).join("")}</div>
+      <textarea id="sc-note-${p.id}" data-note="${p.id}" placeholder="Notas de scouting (se guardan solas)">${esc(sl.note||"")}</textarea>
+    </div>`;
+  });
+  h+=`</div><div class="sc-bars">`;
+  keys.forEach(k=>{
+    h+=`<div class="sc-bar-row"><div class="sc-bar-l">${esc(M[k].l)}${M[k].low?" ↓":""}</div><div class="sc-bar-set">`;
+    players.forEach((p,i)=>{ const pc=(PCT.get(p.id)||{})[k];
+      h+=`<div class="sc-bar" style="--c:${PCOL[i]}"><div class="sc-track"><div class="sc-fill" style="width:${pc!=null?Math.max(pc,2):0}%"></div></div><div class="sc-bv"><b>${fmt(k,p[k])}</b> ${pc!=null?"p"+pc:""}</div></div>`; });
+    h+=`</div></div>`;
+  });
+  h+=`</div><div class="sc-note">Barra = percentil frente a ${FAMS[fam].l.toLowerCase()}s con ${POOL_MIN}+ minutos (línea central = mediana). ↓ = menos es mejor.</div>`;
+  box.innerHTML=h;
+}
+function bindCmp(){
+  const box=$("sc-cmp"); let t=null;
+  box.addEventListener("click",async e=>{
+    const rm=e.target.closest("[data-rm]"); if(rm){ toggleCmp(+rm.dataset.rm); return; }
+    const sb=e.target.closest(".sc-status button"); if(sb){ const id=+sb.parentElement.dataset.id; const cur=(Store.get(id)||{}).status; const s=sb.dataset.s===cur?"":sb.dataset.s;
+      await Store.set(id,{status:s}); renderCmp(); renderSL(); renderTable(); }
+  });
+  box.addEventListener("input",e=>{ const ta=e.target.closest("[data-note]"); if(!ta) return; clearTimeout(t);
+    t=setTimeout(async()=>{ await Store.set(+ta.dataset.note,{note:ta.value.slice(0,2000)}); renderSL(); },700); });
+}
+
+// ---------- table ----------
+function renderTable(){
+  const list=filtered(); const fam=S.fam; const keys=FAMS[fam].m.filter(k=>k!=="rat");
+  const val=(p,k)=>{ if(k==="_score") return (PCT.get(p.id)||{})._score; if(k==="n"||k==="t") return p[k]; return p[k]; };
+  list.sort((a,b)=>{ const va=val(a,S.sort), vb=val(b,S.sort); if(va==null&&vb==null) return (b.min||0)-(a.min||0); if(va==null) return 1; if(vb==null) return -1;
+    return (typeof va==="string"? va.localeCompare(vb) : va-vb)*S.dir; });
+  const cols=[["n","Jugador"],["t","Club"],["st",""],["age","Edad"],["min","Min"],["rat","Rating"],["_score","Índice"]].concat(keys.map(k=>[k,M[k].l.replace(" /90","/90")]));
+  const cmp=new Set(S.cmp);
+  let h=`<thead><tr>`+cols.map(([k,l])=>`<th data-k="${k}"${S.sort===k?` aria-sort="${S.dir>0?"ascending":"descending"}"`:""}>${esc(l)}${S.sort===k?(S.dir>0?" ▲":" ▼"):""}</th>`).join("")+`</tr></thead><tbody>`;
+  list.slice(0,S.shown).forEach(p=>{
+    const pr=PCT.get(p.id)||{}; const sl=(Store.get(p.id)||{}).status;
+    h+=`<tr data-id="${p.id}" class="${cmp.has(p.id)?"on":""}"><td><span class="nm">${esc(p.n)}</span><span class="ps">${esc((p.pos||"").split(",")[0])}${p.fx?"*":""}</span>${p.lsc?'<span class="sc-badge lsc">LSC</span>':""}${p.out?'<span class="sc-badge out">Fuera</span>':""}</td>
+      <td>${esc(p.t)}</td><td>${sl?`<span class="sc-dotst" style="background:${STATUS[sl].c}" title="${STATUS[sl].l}"></span>`:""}</td>
+      <td>${p.age??"—"}</td><td>${fmt("min",p.min)}</td><td>${cell(p,"rat",pr)}</td><td class="score">${pr._score??"—"}</td>`+keys.map(k=>`<td>${cell(p,k,pr)}</td>`).join("")+`</tr>`;
+  });
+  h+=`</tbody>`;
+  $("sc-table").innerHTML=h;
+  $("sc-shown").textContent=`Mostrando ${Math.min(S.shown,list.length)} de ${list.length}`;
+  $("sc-morebtn").hidden = S.shown>=list.length;
+  $("sc-rankinfo").textContent = `${FAMS[fam].l} · índice = media de percentiles del perfil · celda sombreada por percentil`;
+}
+function cell(p,k,pr){ const v=p[k], pc=pr[k]; if(v==null) return "—";
+  const a = pc==null?0:Math.max(0,(pc-50)/50); const bg = pc!=null&&pc>=50 ? `background:rgba(61,220,90,${(a*0.38).toFixed(2)})` : "";
+  return `<span class="pc" style="${bg}" title="${pc!=null?"Percentil "+pc:""}">${fmt(k,v)}</span>`; }
+function bindTable(){
+  $("sc-table").addEventListener("click",e=>{
+    const th=e.target.closest("th"); if(th){ const k=th.dataset.k; if(k==="st") return; if(S.sort===k) S.dir*=-1; else { S.sort=k; S.dir=(k==="n"||k==="t"||k==="age")?1:-1; } saveUI(); renderTable(); return; }
+    const tr=e.target.closest("tr[data-id]"); if(tr) toggleCmp(+tr.dataset.id);
+  });
+}
+
+// ---------- shortlist ----------
+function renderSL(){
+  const ent=Object.entries(Store.map).filter(([k,v])=>v&&v.status&&byId.has(+k));
+  let h="";
+  Object.entries(STATUS).forEach(([s,meta])=>{
+    const items=ent.filter(([k,v])=>v.status===s).map(([k,v])=>({p:byId.get(+k),v})).sort((a,b)=>(a.p.f||"").localeCompare(b.p.f||"")||a.p.n.localeCompare(b.p.n));
+    h+=`<div><h3><span class="sc-dotst" style="background:${meta.c}"></span>${meta.l} <span class="sc-sub" style="font:11px var(--f-mono);color:var(--muted)">${items.length}</span></h3><ul>`;
+    h+= items.length? items.map(({p,v})=>`<li data-id="${p.id}">${esc(p.n)}<small>${esc(FAMS[p.f]?FAMS[p.f].l:"—")} · ${esc(p.t)} · ${p.age??"—"} años · índice ${(PCT.get(p.id)||{})._score??"—"}</small>${v.note?`<em>${esc(v.note)}</em>`:""}</li>`).join("") : `<li style="cursor:default;color:var(--muted)">Nadie todavía</li>`;
+    h+=`</ul></div>`;
+  });
+  $("sc-sl").innerHTML=h;
+}
+function bindSL(){ $("sc-sl").addEventListener("click",e=>{ const li=e.target.closest("li[data-id]"); if(!li) return; const p=byId.get(+li.dataset.id);
+  if (S.fam!=="ALL" && p.f!==S.fam && p.f){ S.fam=p.f; S.x=FAMS[p.f].x; S.y=FAMS[p.f].y; syncControls(); renderAll(); }
+  toggleCmp(p.id,true); document.querySelector('[aria-label="Comparador"]').scrollIntoView({behavior:"smooth",block:"start"}); }); }
+
+function renderAll(){
+  const n=filtered().length;
+  $("sc-count").textContent = `${n} jugadores con estos filtros · ${P.length} en la base`;
+  syncControls(); renderPlot(); renderCmp(); renderTable(); renderSL(); saveUI();
+}
+
+// ---------- boot ----------
+buildControls(); bindPlot(); bindCmp(); bindTable(); bindSL();
+if (!S.cmp.length){
+  // Opening state: the two best-rated pivots outside LSC plus Molloy as the LSC reference
+  const top=P.filter(p=>p.f==="DM"&&!p.lsc&&(p.min||0)>=POOL_MIN).sort((a,b)=>((PCT.get(b.id)||{})._score||0)-((PCT.get(a.id)||{})._score||0)).slice(0,2).map(p=>p.id);
+  const ref=P.find(p=>p.lsc&&/Molloy/.test(p.n));
+  S.cmp = top.concat(ref?[ref.id]:[]);
+}
+S.cmp = S.cmp.filter(id=>byId.has(id));
+renderAll();
+Store.init().then(()=>{ renderSL(); renderTable(); renderCmp(); });
+})();
+</script>
